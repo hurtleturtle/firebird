@@ -8,6 +8,7 @@ setup(
     description='Graphing of monitored events',
     packages=find_packages(),
     install_requires=[
+        'asyncio',
         'websockets'
     ]
 )
