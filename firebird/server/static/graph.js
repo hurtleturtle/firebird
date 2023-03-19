@@ -1,9 +1,9 @@
 window.addEventListener('DOMContentLoaded', on_load);
 
-function on_load() {
+async function on_load() {
     const graph = document.getElementById('graph');
     const websocket = new WebSocket('ws://localhost:8001/');
-    const chartData = initialiseGraph();
+    let chartData = await initialiseGraphData();
     const chart = new Chart(
         graph,
         {
@@ -49,28 +49,29 @@ function on_load() {
     drawGraph(chart, websocket);
 }
 
-function initialiseGraph() {
-    const initData = new Request('/init');
+async function initialiseGraphData() {
+    const url = '/init';
+    let response = await fetch(url);
+    let data = await response.json();
+    return transformDataToAxes(data);
+}
 
-    fetch(initData)
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            return data
-        })
-        .catch((error) => {
-            console.log('Error: ', error);
-        });
+function transformDataToAxes(events) {
+    let transformedEvents = []
 
+    events.forEach(event => {
+        let date = new Date(event.timestamp);
+        let newData = {x: date, y: event.temperature};
+        transformedEvents.push(newData);
+    })
+    console.log(events);
+    console.log(transformedEvents);
+    return transformedEvents
 }
 
 function drawGraph(chart, websocket) {
     websocket.addEventListener('message', ({ data }) => {
-        const event = JSON.parse(data);
-        console.log(event)
-        let date = new Date(event.timestamp);
-        let newData = {x: date, y: event.temperature};
-        console.log(newData);
+        let newData = transformDataToAxes(data);
         addData(chart, newData);
     });
 }
