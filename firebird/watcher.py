@@ -26,7 +26,11 @@ async def monitor_logs(log_path=LOG_PATH):
             websockets.broadcast(SESSIONS, json.dumps(events))
 
 
-async def get_events(filename=None, count=1):
+async def gather_events(filename=LOG_PATH, count=1):
+    return await get_events(filename, count)
+
+
+async def get_events(filename=LOG_PATH, count=1):
     """
     Get the `count` last events from `filename`. 
     """

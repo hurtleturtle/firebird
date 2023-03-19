@@ -1,6 +1,9 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', on_load);
+
+function on_load() {
     const graph = document.getElementById('graph');
     const websocket = new WebSocket('ws://localhost:8001/');
+    const chartData = initialiseGraph();
     const chart = new Chart(
         graph,
         {
@@ -10,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     label: 'Nuts',
                     pointRadius: 5,
                     pointBackgroundColor: 'rgba(0, 0, 255, 1)',
-                    data: []
+                    data: chartData
                 }]
             },
             options: {
@@ -44,15 +47,31 @@ window.addEventListener('DOMContentLoaded', () => {
         websocket.send(JSON.stringify({event: 'register'}))
     })
     drawGraph(chart, websocket);
-});
+}
+
+function initialiseGraph() {
+    const initData = new Request('/init');
+
+    fetch(initData)
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            return data
+        })
+        .catch((error) => {
+            console.log('Error: ', error);
+        });
+
+}
 
 function drawGraph(chart, websocket) {
     websocket.addEventListener('message', ({ data }) => {
         const event = JSON.parse(data);
-        let date = new Date(event.timestamp)
-        let newData = {x: date, y: event.temperature}
-        console.log(newData)
-        addData(chart, newData)
+        console.log(event)
+        let date = new Date(event.timestamp);
+        let newData = {x: date, y: event.temperature};
+        console.log(newData);
+        addData(chart, newData);
     });
 }
 
