@@ -11,7 +11,7 @@ bp = Blueprint('graph', __name__)
 
 @bp.route('/init')
 def initialise_graph():
-    default_count = current_app.config.get('DEFAULT_EVENT_COUNT')
+    default_count = current_app.config.get('DEFAULT_EVENT_COUNT', 100)
 
     try:
         count = request.args.get('count', default=default_count, type=int)
@@ -19,6 +19,7 @@ def initialise_graph():
         count = default_count
 
     events = asyncio.run(get_events(count=count))
+    current_app.logger.info(events)
     return jsonify(events)
 
 

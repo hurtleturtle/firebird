@@ -3,10 +3,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='firebird',
-    version='1.0.2',
+    version='1.0.7',
     author='Jono Nicholas',
     description='Graphing of monitored events',
-    packages=['firebird'],
+    packages=find_packages(exclude=['connect4']),
+    py_modules=['wsgi'],
     install_requires=[
         'aiofiles==23.1.0',
         'click==8.1.3',
