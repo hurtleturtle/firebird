@@ -1,13 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
     const graph = document.getElementById('graph');
-    const websocket = new WebSocket('ws://localhost:8001/')
-    const values = [
-        {x: 10, y: 1},
-        {x: 20, y: 2},
-        {x: 30, y: 3},
-        {x: 40, y: 4},
-        {x: 50, y: 5},
-    ]
+    const websocket = new WebSocket('ws://localhost:8001/');
     const chart = new Chart(
         graph,
         {
@@ -21,14 +14,17 @@ window.addEventListener('DOMContentLoaded', () => {
                 }]
             },
             options: {
-                legend: {display: false},
+                plugins: {
+                    legend: {display: false}
+                },
                 scales: {
                     x: {
                         type: 'timeseries',
                         title: {
                             display: true,
                             text: 'Time'
-                        }
+                        },
+                        grid: {display: false}
                     },
                     y: {
                         type: 'linear',
@@ -37,12 +33,16 @@ window.addEventListener('DOMContentLoaded', () => {
                         title: {
                             display: true,
                             text: 'Temperature (\'C)'
-                        }
+                        },
+                        grid: {display: false}
                     }
                 }
             }
         }
-    )
+    );
+    websocket.addEventListener('open', (ev) => {
+        websocket.send(JSON.stringify({event: 'register'}))
+    })
     drawGraph(chart, websocket);
 });
 
