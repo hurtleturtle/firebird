@@ -1,1 +1,2 @@
-graft firebird/server
+graft firebird/server/static
+graft firebird/server/routes/templates
