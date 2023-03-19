@@ -1,70 +1,67 @@
-import asyncio
 import aiofiles
 from aiofiles.os import stat
 import os
 import websockets
 import json
-from time import sleep
+from typing import IO
+from firebird import SESSIONS
 
 
 __all__ = [
-    'run'
+    'get_events',
+    'monitor_logs'
 ]
-SESSIONS = set()
+LOG_PATH = os.getenv('LOG_PATH', '/var/log/monitor/temp.log')
 
 
-async def handler(websocket):
-    SESSIONS.add(websocket)
-    try:
-        await websocket.wait_closed()
-    finally:
-        SESSIONS.remove(websocket)
-
-
-
-async def monitor_logs():
-    temperature_log_path = '/var/log/monitor/temp.log'
+async def monitor_logs(log_path=LOG_PATH):
+    """Monitor `log_path` for changes and get event on change"""
     last_modified = 0
 
     while True:
-        details = await stat(temperature_log_path)
-        if details.st_mtime > last_modified:
+        details = await stat(log_path)
+        if details.st_mtime > last_modified and SESSIONS:
             last_modified = details.st_mtime
-            async with aiofiles.open(temperature_log_path, 'rb') as f:
-                try:
-                    await f.seek(-2, os.SEEK_END)
-                    while await f.read(1) != b'\n':
-                        await f.seek(-2, os.SEEK_CUR)
-                except OSError:
-                    await f.seek(0)
-                last_line = await f.readline()
-                timestamp, level, temperature = last_line.decode().split(' - ')
-                event = {
-                    'timestamp': timestamp,
-                    'temperature': float(temperature.replace('\'C', ''))
-                }
-                # print(SESSIONS, event)
-                websockets.broadcast(SESSIONS, json.dumps(event))
+            events = await get_events(log_path)
+            websockets.broadcast(SESSIONS, json.dumps(events))
 
 
-async def serve_websockets():
-    async with websockets.serve(handler, 'localhost', 8001):
-        await asyncio.Future()
+async def get_events(filename=None, count=1):
+    """
+    Get the `count` last events from `filename`. 
+    """
+    events_found = 0
+    events = []
+
+    async with aiofiles.open(filename, 'rb') as f:
+        try:
+            await f.seek(0, os.SEEK_END)
+
+            # Find `count` newline characters
+            while events_found < count:
+                # Move cursor to one before the last '\n' in the file so that we don't immediately find
+                # a newline
+                await f.seek(-2, os.SEEK_CUR)
+
+                while await f.read(1) != b'\n':
+                    await f.seek(-2, os.SEEK_CUR)
+                events_found += 1
+
+            # Process each line and turn into an event
+            for _ in range(events_found):
+                events.append(await parse_event(f))
+        except OSError:
+            await f.seek(0)
+            events.append(await parse_event(f))
+
+        return events
 
 
-async def main():
-    server = asyncio.create_task(serve_websockets())
-    logs = asyncio.create_task(monitor_logs())
-
-    await server
-    await logs
-
-def run():
-    asyncio.run(main())
-
-
-if __name__ == '__main__':
-    try:
-        run()
-    except KeyboardInterrupt:
-        pass
+async def parse_event(f:IO):
+    last_line = await f.readline()
+    timestamp, level, temperature = last_line.decode().split(' - ')
+    event = {
+        'timestamp': timestamp,
+        'temperature': float(temperature.replace('\'C', ''))
+    }
+    return event

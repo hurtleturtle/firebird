@@ -1,8 +1,10 @@
 import logging
 from random import randint
+import os
+
 
 logging.basicConfig(
-    filename='/var/log/monitor/temp.log', 
+    filename=os.getenv('LOG_PATH', '/var/log/monitor/temp.log'), 
     level=logging.DEBUG, 
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
