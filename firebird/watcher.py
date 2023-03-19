@@ -31,7 +31,7 @@ async def handler(websocket):
                 timestamp, level, temperature = last_line.split(' - ')
             event = {
                 'timestamp': timestamp,
-                'temperature': temperature
+                'temperature': float(temperature.replace('\'C', ''))
             }
             await websocket.send(json.dumps(event))
         # sleep(1)
