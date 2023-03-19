@@ -2,10 +2,12 @@ import asyncio
 import websockets
 from firebird import SESSIONS
 from firebird.watcher import monitor_logs
+import os
 
 __all__  = [
     'main'
 ]
+PORT = os.getenv('INTERNAL_WS_PORT', 8002)
 
 
 async def handler(websocket):   
@@ -17,7 +19,7 @@ async def handler(websocket):
 
 
 async def serve_websockets():
-    async with websockets.serve(handler, '', 8001):
+    async with websockets.serve(handler, '', PORT):
         await asyncio.Future()
 
 
