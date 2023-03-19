@@ -6,9 +6,14 @@ setup(
     version='1.0.1',
     author='Jono Nicholas',
     description='Graphing of monitored events',
-    packages=find_packages(),
+    packages=['firebird'],
     install_requires=[
         'asyncio',
         'websockets'
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'firebird = firebird.watcher:run'
+        ]
+    }
 )

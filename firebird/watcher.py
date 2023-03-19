@@ -48,7 +48,7 @@ async def monitor_logs():
 
 
 async def serve_websockets():
-    async with websockets.serve(handler, '', 8001):
+    async with websockets.serve(handler, 'localhost', 8001):
         await asyncio.Future()
 
 
@@ -60,7 +60,7 @@ async def main():
     await logs
 
 def run():
-    asyncio.run(main(), debug=True)
+    asyncio.run(main())
 
 
 if __name__ == '__main__':
