@@ -2,16 +2,17 @@ window.addEventListener('DOMContentLoaded', on_load);
 
 async function on_load() {
     const graph = document.getElementById('graph');
-    const websocket = new WebSocket('ws://localhost:8001/');
+    const websocketURL = 'ws://' + window.location.hostname + ':8001';
+    const websocket = new WebSocket(websocketURL);
     let chartData = await initialiseGraphData();
     const chart = new Chart(
         graph,
         {
-            type: 'scatter',
+            type: 'line',
             data: {
                 datasets: [{
-                    label: 'Nuts',
-                    pointRadius: 5,
+                    label: 'CPU',
+                    pointRadius: 2.5,
                     pointBackgroundColor: 'rgba(0, 0, 255, 1)',
                     data: chartData
                 }]
@@ -64,22 +65,24 @@ function transformDataToAxes(events) {
         let newData = {x: date, y: event.temperature};
         transformedEvents.push(newData);
     })
-    console.log(events);
-    console.log(transformedEvents);
-    return transformedEvents
+
+    return transformedEvents;
 }
 
 function drawGraph(chart, websocket) {
     websocket.addEventListener('message', ({ data }) => {
-        let newData = transformDataToAxes(data);
-        addData(chart, newData);
+        let events = JSON.parse(data);
+        let transformedEvents = transformDataToAxes(events);
+        transformedEvents.forEach(event => addData(chart, event));
     });
 }
 
-function addData(chart, data) {
-    // chart.data.labels.push(label);
+function addData(chart, data, max_data_points=100) {
     chart.data.datasets.forEach((dataset) => {
         dataset.data.push(data);
+        if (dataset.data.length > max_data_points) {
+            dataset.data.shift();
+        }
     });
     chart.update();
 }
