@@ -22,7 +22,7 @@ async function on_load() {
                 },
                 scales: {
                     x: {
-                        type: 'timeseries',
+                        type: 'time',
                         title: {
                             display: true,
                             text: 'Time'
