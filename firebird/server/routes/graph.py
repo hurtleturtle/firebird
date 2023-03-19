@@ -19,7 +19,6 @@ def initialise_graph():
         count = default_count
 
     events = asyncio.run(get_events(count=count))
-    print(events)
     return jsonify(events)
 
 
