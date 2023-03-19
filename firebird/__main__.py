@@ -1,5 +1,5 @@
 import asyncio
-from firebird.comms import main
+from firebird.comms import run
 
 
-asyncio.run(main())
+run()

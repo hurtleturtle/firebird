@@ -27,3 +27,7 @@ async def main():
 
     await server
     await logs
+
+
+def run():
+    asyncio.run(main())
