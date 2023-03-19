@@ -15,8 +15,10 @@ SESSIONS = set()
 
 async def handler(websocket):
     SESSIONS.add(websocket)
-    async for message in websocket:
-        event = json.loads(message)
+    try:
+        await websocket.wait_closed()
+    finally:
+        SESSIONS.remove(websocket)
 
 
 
@@ -41,7 +43,7 @@ async def monitor_logs():
                     'timestamp': timestamp,
                     'temperature': float(temperature.replace('\'C', ''))
                 }
-                print(SESSIONS, event)
+                # print(SESSIONS, event)
                 websockets.broadcast(SESSIONS, json.dumps(event))
 
 
