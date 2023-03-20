@@ -5,6 +5,7 @@ import websockets
 import json
 from typing import IO
 from firebird import SESSIONS
+from datetime import datetime
 
 
 __all__ = [
@@ -12,6 +13,7 @@ __all__ = [
     'monitor_logs'
 ]
 LOG_PATH = os.getenv('LOG_PATH', '/var/log/monitor/temp.log')
+DATE_FORMAT = os.getenv('DATE_FORMAT', '%Y-%m-%d %H:%M:%S,%f')
 
 
 async def monitor_logs(log_path=LOG_PATH):
@@ -65,7 +67,7 @@ async def parse_event(f:IO):
     last_line = await f.readline()
     timestamp, level, temperature = last_line.decode().split(' - ')
     event = {
-        'timestamp': timestamp,
+        'timestamp': datetime.strptime(timestamp, DATE_FORMAT).isoformat(),
         'temperature': float(temperature.replace('\'C', ''))
     }
     return event
