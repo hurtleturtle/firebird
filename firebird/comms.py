@@ -7,7 +7,7 @@ import os
 __all__  = [
     'main'
 ]
-PORT = os.getenv('INTERNAL_WS_PORT', 8002)
+PORT = os.getenv('INTERNAL_WS_PORT', 8001)
 
 
 async def handler(websocket):   
