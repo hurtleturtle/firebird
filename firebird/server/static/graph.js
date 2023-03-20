@@ -28,6 +28,9 @@ async function on_load() {
                             display: true,
                             text: 'Time'
                         },
+                        time: {
+                            unit: 'minute'
+                        },
                         grid: {display: false}
                     },
                     y: {
@@ -71,9 +74,14 @@ function transformDataToAxes(events) {
 
 function drawGraph(chart, websocket) {
     websocket.addEventListener('message', ({ data }) => {
-        let events = JSON.parse(data);
-        let transformedEvents = transformDataToAxes(events);
-        transformedEvents.forEach(event => addData(chart, event));
+        try {
+            let events = JSON.parse(data);
+        }
+        catch {
+            let events = [];
+        }
+            let transformedEvents = transformDataToAxes(events);
+            transformedEvents.forEach(event => addData(chart, event));
     });
 }
 
