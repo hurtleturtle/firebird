@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='firebird',
-    version='1.1.4',
+    version='1.2.1',
     author='Jono Nicholas',
     description='Graphing of monitored events',
     packages=find_packages(exclude=['connect4']),
