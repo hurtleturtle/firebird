@@ -74,14 +74,15 @@ function transformDataToAxes(events) {
 
 function drawGraph(chart, websocket) {
     websocket.addEventListener('message', ({ data }) => {
+        let events = [];
         try {
-            let events = JSON.parse(data);
+            events = JSON.parse(data);
+            let transformedEvents = transformDataToAxes(events);
+            transformedEvents.forEach(event => addData(chart, event))
         }
         catch {
-            let events = [];
         }
-            let transformedEvents = transformDataToAxes(events);
-            transformedEvents.forEach(event => addData(chart, event));
+            
     });
 }
 
