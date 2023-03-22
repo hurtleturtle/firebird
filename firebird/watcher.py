@@ -21,9 +21,7 @@ def get_intended_temp(filename='/boot/config.txt'):
     with open(filename) as f:
         config = f.read()
         fan_config = re.search(r'^.*gpio-fan.*temp=(.*?),?$', config)
-        print(fan_config)
         temp = fan_config.group(1)
-        print(temp)
         return int(temp) / 1000
 
 
