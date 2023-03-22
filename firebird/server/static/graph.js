@@ -4,6 +4,7 @@ async function on_load() {
     const graph = document.getElementById('graph');
     const websocketURL = 'ws://' + window.location.hostname + ':8001';
     const websocket = new WebSocket(websocketURL);
+    monitorConnections(websocket);
     let chartData = await initialiseGraphData();
     const chart = new Chart(
         graph,
@@ -19,7 +20,11 @@ async function on_load() {
             },
             options: {
                 plugins: {
-                    legend: {display: false}
+                    legend: {display: false},
+                    title: {
+                        display: true,
+                        text: 'Firebird Monitoring'
+                    }
                 },
                 scales: {
                     x: {
@@ -77,8 +82,10 @@ function drawGraph(chart, websocket) {
         let events = [];
         try {
             events = JSON.parse(data);
-            let transformedEvents = transformDataToAxes(events);
-            transformedEvents.forEach(event => addData(chart, event))
+            if (Array.isArray(events)) {
+                let transformedEvents = transformDataToAxes(events);
+                transformedEvents.forEach(event => addData(chart, event))
+            }
         }
         catch {
         }
@@ -94,4 +101,18 @@ function addData(chart, data, max_data_points=100) {
         }
     });
     chart.update();
+}
+
+function monitorConnections(websocket) {
+    websocket.addEventListener('message', ({ data }) => {
+        let event = JSON.parse(data);
+        if ('connections' in event) {
+            updateConnectionCount(event.connections);
+        }
+    })
+}
+
+function updateConnectionCount(count) {
+    let connectionEl = document.querySelector('#connections > span');
+    connectionEl.innerText = count;
 }

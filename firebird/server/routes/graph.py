@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, current_app, render_template
-from firebird.watcher import get_events
+from firebird.watcher import get_events, SESSIONS
 import asyncio
 
 

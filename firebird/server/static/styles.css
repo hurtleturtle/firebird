@@ -1,0 +1,11 @@
+#connections {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    border-radius: 0.5em;
+    margin-right: 2rem;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    line-height: 1.2;
+}
