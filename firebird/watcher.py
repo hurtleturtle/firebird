@@ -20,7 +20,7 @@ DATE_FORMAT = os.getenv('DATE_FORMAT', '%Y-%m-%d %H:%M:%S,%f')
 def get_intended_temp(filename='/boot/config.txt'):
     with open(filename) as f:
         config = f.read()
-        fan_config = re.search(r'^.*gpio-fan.*temp=(.*?),?$', config)
+        fan_config = re.search(r'temp=(\d+)', config)
         temp = fan_config.group(1)
         return int(temp) / 1000
 
