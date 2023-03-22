@@ -1,11 +1,15 @@
-#connections {
+.info-box {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 1rem;
+    padding: 0.4rem;
     border-radius: 0.5em;
+    margin-top: 1rem;
     margin-right: 2rem;
+    background-color: rgba(20, 20, 20, 0.8);
+    color: white;
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     font-size: 12px;
-    line-height: 1.2;
+    font-weight: bold;
+    line-height: 1.4;
 }

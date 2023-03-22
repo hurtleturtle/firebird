@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, current_app, render_template
-from firebird.watcher import get_events, SESSIONS
+from firebird.watcher import get_events, get_intended_temp
 import asyncio
 
 
@@ -21,6 +21,12 @@ def initialise_graph():
     events = asyncio.run(get_events(count=count))
     current_app.logger.info(events)
     return jsonify(events)
+
+
+@bp.route('/temperature')
+def temperature():
+    temp = get_intended_temp(current_app.config.get('BOOT_CONFIG', '/boot/config.txt'))
+    return str(temp), 200
 
 
 @bp.route('/')

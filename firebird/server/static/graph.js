@@ -5,6 +5,7 @@ async function on_load() {
     const websocketURL = 'ws://' + window.location.hostname + ':8001';
     const websocket = new WebSocket(websocketURL);
     monitorConnections(websocket);
+    getTemperature();
     let chartData = await initialiseGraphData();
     const chart = new Chart(
         graph,
@@ -115,4 +116,11 @@ function monitorConnections(websocket) {
 function updateConnectionCount(count) {
     let connectionEl = document.querySelector('#connections > span');
     connectionEl.innerText = count;
+}
+
+async function getTemperature(url='/temperature') {
+    let tempEl = document.querySelector('#temperature > span');
+    let response = await fetch(url);
+    let temp = await response.text();
+    tempEl.innerText = temp + '\'C';
 }

@@ -6,6 +6,7 @@ import json
 from typing import IO
 from firebird import SESSIONS
 from datetime import datetime
+import re
 
 
 __all__ = [
@@ -14,6 +15,17 @@ __all__ = [
 ]
 LOG_PATH = os.getenv('LOG_PATH', '/var/log/monitor/temp.log')
 DATE_FORMAT = os.getenv('DATE_FORMAT', '%Y-%m-%d %H:%M:%S,%f')
+
+
+def get_intended_temp(filename='/boot/config.txt'):
+    with open(filename) as f:
+        config = f.read()
+        fan_config = re.search(r'^.*gpio-fan.*temp=(.*?),?$', config)
+        print(fan_config)
+        temp = fan_config.group(1)
+        print(temp)
+        return int(temp) / 1000
+
 
 
 async def monitor_logs(log_path=LOG_PATH):
